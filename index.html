@@ -7,6 +7,9 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="HP Landslide">
 <meta name="theme-color" content="#1e293b">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <title>HP Landslide Live Alert</title>
 <style>
 * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
@@ -106,6 +109,18 @@ body { font-family: -apple-system, 'SF Pro', system-ui, sans-serif; background: 
 
 /* Progress */
 .progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: var(--accent); z-index: 200; transition: width 0.3s; }
+
+/* iOS Install Banner */
+.install-banner { margin: 12px 16px; padding: 16px; background: linear-gradient(135deg, #1e3a5f 0%, #0f4c75 100%); border-radius: 14px; border: 1px solid #38bdf8; position: relative; }
+.install-banner .close-btn { position: absolute; top: 8px; right: 12px; background: none; border: none; color: var(--dim); font-size: 22px; cursor: pointer; padding: 4px; line-height: 1; }
+.install-banner h3 { font-size: 15px; font-weight: 700; margin-bottom: 10px; color: #38bdf8; }
+.install-banner .step { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px; }
+.install-banner .step-num { flex-shrink: 0; width: 24px; height: 24px; background: #38bdf8; color: #0f172a; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; }
+.install-banner .step-text { font-size: 13px; line-height: 1.5; color: #e2e8f0; }
+.install-banner .step-text strong { color: #fff; }
+.install-banner .share-icon { display: inline-block; width: 20px; height: 20px; vertical-align: middle; margin: 0 2px; }
+.install-banner .arrow { display: block; text-align: center; font-size: 28px; color: #38bdf8; margin: 4px 0; animation: bounce 1.5s infinite; }
+@keyframes bounce { 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(4px); } }
 </style>
 </head>
 <body>
@@ -128,6 +143,25 @@ body { font-family: -apple-system, 'SF Pro', system-ui, sans-serif; background: 
   <div class="spinner"></div>
   <span>Fetch Live Data</span>
 </button>
+
+<div class="install-banner" id="installBanner">
+  <button class="close-btn" onclick="dismissInstall()">&times;</button>
+  <h3>Install as App on iPhone</h3>
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-text">Tap the <strong>Share</strong> button <svg class="share-icon" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2"><rect x="5" y="10" width="14" height="12" rx="2"/><polyline points="8,7 12,3 16,7"/><line x1="12" y1="3" x2="12" y2="15"/></svg> at the bottom of Safari</div>
+  </div>
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-text">Scroll down and tap <strong>"Add to Home Screen"</strong></div>
+  </div>
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-text">Tap <strong>"Add"</strong> in the top right corner</div>
+  </div>
+  <div class="arrow">&darr;</div>
+  <div class="step-text" style="text-align:center;color:#94a3b8;font-size:12px">The app will appear on your Home Screen with the HP Landslide icon</div>
+</div>
 
 <div id="alertsSection"></div>
 
@@ -647,6 +681,30 @@ function showToast(msg) {
   t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 2500);
 }
+
+// =========================================================================
+// PWA: Service Worker + Install Banner
+// =========================================================================
+// Register service worker
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+
+// Show/hide install banner
+function dismissInstall() {
+  document.getElementById('installBanner').style.display = 'none';
+  localStorage.setItem('hp_install_dismissed', '1');
+}
+
+// Hide banner if already installed as PWA (standalone) or dismissed
+(function() {
+  const isStandalone = window.navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches;
+  const isDismissed = localStorage.getItem('hp_install_dismissed') === '1';
+  if (isStandalone || isDismissed) {
+    const b = document.getElementById('installBanner');
+    if (b) b.style.display = 'none';
+  }
+})();
 </script>
 </body>
 </html>
