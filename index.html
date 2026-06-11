@@ -178,15 +178,14 @@ body { font-family: -apple-system, 'SF Pro', system-ui, sans-serif; background: 
 <div class="footer">
   HPSDMA AI Landslide Agent &bull; Live Data Feeds<br>
   Open-Meteo API + Sentinel-2 via Planetary Computer<br>
-  Powered by HP Landslide Probability Model (795,826 grids)
+  Powered by HP Landslide Probability Model
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
 // =========================================================================
-// BASELINE DATA (from our 795,826-grid landslide probability model)
-// Pre-computed tehsil baselines to avoid loading 50MB CSV on mobile
+// BASELINE DATA (pre-computed tehsil baselines)
 // =========================================================================
 const TEHSIL_BASELINE = {
   "SUJANPUR":{"district":"HAMIRPUR","lat":31.83,"lon":76.50,"prob":0.703,"p90":0.929,"density":5.2,"recurrence":2.1},
@@ -644,7 +643,7 @@ Summary: ${nRed} RED | ${nOrange} ORANGE | ${nYellow} YELLOW\n`;
   }
 
   msg += `\n_Data: Open-Meteo + Sentinel-2_
-_HP Landslide Probability Model (795,826 grids)_
+_HP Landslide Probability Model_
 _HPSDMA AI Landslide Agent_`;
 
   return msg;
